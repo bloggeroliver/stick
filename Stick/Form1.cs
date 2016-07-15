@@ -623,11 +623,19 @@ namespace Stick
             Graphics G = Graphics.FromImage(Drawn);
 
             Pen blackPen = new Pen(Color.Black, 3);
+            Pen redPen = new Pen(Color.Red, 3);
+
             int offset = 50;
             G.DrawRectangle(blackPen, new Rectangle(offset, offset, WorldWidth - 2*offset, WorldHeight - 2*offset));
+
+            int ID = 0;
+
             foreach (PointMass pm in PointMassDictionary)
             {
-                G.DrawEllipse(blackPen, offset + Convert.ToInt32(Math.Round(pm.Position.Item1 * (WorldWidth - 2 * offset) / WorldWidthReal))-3, WorldHeight - offset - Convert.ToInt32(Math.Round(pm.Position.Item2 * (WorldHeight - 2 * offset) / WorldHeightReal))-3, 6, 6);
+                if (ID++ == 0)
+                    G.DrawEllipse(redPen, offset + Convert.ToInt32(Math.Round(pm.Position.Item1 * (WorldWidth - 2 * offset) / WorldWidthReal)) - 3, WorldHeight - offset - Convert.ToInt32(Math.Round(pm.Position.Item2 * (WorldHeight - 2 * offset) / WorldHeightReal)) - 3, 6, 6);
+                else
+                    G.DrawEllipse(blackPen, offset + Convert.ToInt32(Math.Round(pm.Position.Item1 * (WorldWidth - 2 * offset) / WorldWidthReal))-3, WorldHeight - offset - Convert.ToInt32(Math.Round(pm.Position.Item2 * (WorldHeight - 2 * offset) / WorldHeightReal))-3, 6, 6);
             }
             foreach (Spring spring in SpringDictionary)
             {
