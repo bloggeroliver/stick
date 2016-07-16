@@ -694,7 +694,7 @@ namespace Stick
         double _WorldHeightReal;
        
 
-        public class Individual : ICloneable
+        public class Individual : ICloneable, IComparable<Individual>
         {
             public double[][] Angles;
             public double Fitness;
@@ -717,6 +717,16 @@ namespace Stick
                 // Adam1 = new Adolf(_WorldWidth, _WorldHeight, _WorldWidthReal, _WorldHeightReal);
             }
 
+            public int CompareTo(Individual other)
+            {
+                if (other.Fitness < Fitness)
+                    return -1;
+                if (other.Fitness > Fitness)
+                    return 1;
+                else
+                    return 0;
+            }
+
             public object Clone()
             {
                 Individual Cloned = new Individual(Angles.Length, Angles[0].Length, _WorldWidth, _WorldHeight, _WorldWidthReal, _WorldHeightReal);
@@ -732,15 +742,17 @@ namespace Stick
                         Cloned.Angles[i][j] = Angles[i][j];
                     }
                 }
+                Cloned.Fitness = Fitness;
                 return Cloned;
             }
         }
 
-        double CrossoverFrequency = 0.6;
-        double MutationFrequency = 0.1;
-        int PopulationSize = 10;
-        double ElitistFrequency = 0.1;
+        double[] CrossoverFrequencies = new double[] { 0.1, 0.3, 0.6, 0.8, 0.9 };
+        double[] MutationFrequencies = new double[] { 0.001, 0.01, 0.05, 0.1, 0.3 };
+        double[] ElitistFrequencies = new double[] { 0.1, 0.2, 0.3};
 
+        int PopulationSize = 10;
+    
         Individual[] Population;
         int Length;
         int Time;
@@ -808,11 +820,24 @@ namespace Stick
             for (int i = 0; i < PopulationSize; i++)
             {
                 Population[i].Fitness = CalculateFitness(Population[i]);
+               
+            }
+
+            Array.Sort(Population);
+
+            for (int i = 0; i < PopulationSize; i++)
+            {
                 if (Best == null || Population[i].Fitness > Best.Fitness)
                     Best = Population[i];
                 SumFitness += Population[i].Fitness;
                 SummedFitness[i] = SumFitness;
             }
+
+            Random Rnd = new Random();
+
+            double ElitistFrequency = ElitistFrequencies[Rnd.Next(ElitistFrequencies.Length)];
+            double CrossoverFrequency = CrossoverFrequencies[Rnd.Next(CrossoverFrequencies.Length)];
+            double MutationFrequency = MutationFrequencies[Rnd.Next(MutationFrequencies.Length)]; ;
 
             Individual[] NewPopulation = new Individual[PopulationSize];
 
@@ -821,8 +846,6 @@ namespace Stick
             {
                 NewPopulation[i] = (Individual)Population[i].Clone();
             }
-
-            Random Rnd = new Random();
 
             for (int i = (int)Math.Ceiling(PopulationSize * ElitistFrequency); i < PopulationSize; i++)
             {
@@ -869,7 +892,7 @@ namespace Stick
                         // do a mutation
                         if (Rnd.NextDouble() <= MutationFrequency)
                         {
-                            Child.Angles[j][z] = Child.Angles[j][z] + Rnd.Next(100) - 50;
+                            Child.Angles[j][z] = Child.Angles[j][z] + Rnd.Next(360) - 180;
                         }
                     }
                 }
