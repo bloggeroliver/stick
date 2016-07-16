@@ -89,6 +89,7 @@ namespace Stick
 
 
             Adam1.Initialize();
+
             double TimeStep = 0.0001;
             double MaxTime = 10;
             double Steps = MaxTime / TimeStep;
@@ -803,13 +804,14 @@ namespace Stick
         public void Breed()
         {
             double[] SummedFitness = new double[PopulationSize];
-
+            double SumFitness = 0;
             for (int i = 0; i < PopulationSize; i++)
             {
                 Population[i].Fitness = CalculateFitness(Population[i]);
                 if (Best == null || Population[i].Fitness > Best.Fitness)
                     Best = Population[i];
-                SummedFitness[i] += Population[i].Fitness;
+                SumFitness += Population[i].Fitness;
+                SummedFitness[i] = SumFitness;
             }
 
             Individual[] NewPopulation = new Individual[PopulationSize];
@@ -836,11 +838,11 @@ namespace Stick
                 // Tournament selection of the parents
                 for (int j = 0; j < PopulationSize; j++)
                 {
-                    if (SummedFitness[j] >= RParent1)
+                    if (Parent1 == null && SummedFitness[j] >= RParent1)
                     {
                         Parent1 = Population[j];
                     }
-                    if (SummedFitness[j] >= RParent2)
+                    if (Parent2 == null && SummedFitness[j] >= RParent2)
                     {
                         Parent2 = Population[j];
                     }
